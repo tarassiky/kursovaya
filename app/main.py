@@ -4,7 +4,6 @@ from typing import List, Dict
 
 app = FastAPI(title="Water Delivery System")
 
-# Хранилище заказов в памяти (для простоты)
 orders_db: Dict[int, dict] = {}
 counter = 1
 
@@ -19,7 +18,7 @@ class Order(OrderCreate):
 
 @app.get("/")
 def root():
-    return {"message": "Water Delivery API"}
+    return {"message": "Water Delivery API is running"}   # исправлено
 
 @app.get("/health")
 def health():
@@ -30,7 +29,7 @@ def create_order(order: OrderCreate):
     global counter
     new_id = counter
     counter += 1
-    orders_db[new_id] = order.dict()
+    orders_db[new_id] = order.model_dump()   # исправлено: .model_dump()
     orders_db[new_id]["status"] = "pending"
     return Order(id=new_id, **orders_db[new_id])
 
