@@ -1,4 +1,8 @@
-﻿from fastapi.testclient import TestClient
+﻿import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from fastapi.testclient import TestClient
 from main import app
 
 client = TestClient(app)
@@ -6,7 +10,7 @@ client = TestClient(app)
 def test_root():
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Water Delivery API"}
+    assert response.json() == {"message": "Water Delivery API is running"}
 
 def test_health():
     response = client.get("/health")
@@ -23,11 +27,9 @@ def test_create_order():
     assert "id" in data
 
 def test_get_order():
-    # создаём заказ
     payload = {"customer_name": "Петр", "address": "Садовая 5", "bottles": 2}
     create_resp = client.post("/orders", json=payload)
     order_id = create_resp.json()["id"]
-    # получаем его
     get_resp = client.get(f"/orders/{order_id}")
     assert get_resp.status_code == 200
     assert get_resp.json()["customer_name"] == "Петр"
